@@ -1,13 +1,13 @@
 {
-  "name": "template",
+  "name": "Trendz",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "jest",
-    "start": "node server/index.js",
+    "start": "node server/server.js",
     "client": "cd client && npm start",
-    "server": "nodemon server/index.js"
+    "server": "nodemon server/server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -16,6 +16,7 @@
     "jest": "^29.0.2",
     "moment-timezone": "^0.5.40",
     "mysql": "^2.18.1",
+    "node-cron": "^3.0.2",
     "nodemon": "^2.0.16",
     "save-dev": "^0.0.1-security",
     "web3": "^1.7.1",
