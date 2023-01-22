@@ -1,4 +1,4 @@
-import { Card, CardBody, CardSubtitle, CardTitle } from "reactstrap";
+import { Card, CardBody, CardSubtitle, CardTitle, Spinner } from "reactstrap";
 import Chart from "react-apexcharts";
 import UseTrendz from "../../UseTrendz/UseTrendz";
 import { useEffect, useState } from "react";
@@ -16,11 +16,11 @@ const SalesChart = () => {
   const getData = async () => {
     let array = await getTokenData();
     array.res?.map((item) => {
-      let number = Number(item.yCRVToken)
+      let number = Number(item.yCRVToken);
       setArrayBalance((old) => [...old, number]);
       setArrayTime((old) => [...old, item.TrendzDate]);
     });
-    setLoading(false)
+    setLoading(false);
   };
   let series = [
     {
@@ -57,13 +57,19 @@ const SalesChart = () => {
         <CardSubtitle className="text-muted" tag="h6">
           Annual Sales Report
         </CardSubtitle>
-        {loading ? <div>Loading...</div> : <Chart
-          type="area"
-          width="100%"
-          height="390"
-          options={options}
-          series={series}
-        ></Chart>}
+        {loading ? (
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <Spinner />
+          </div>
+        ) : (
+          <Chart
+            type="area"
+            width="100%"
+            height="390"
+            options={options}
+            series={series}
+          ></Chart>
+        )}
       </CardBody>
     </Card>
   );
