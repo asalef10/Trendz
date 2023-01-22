@@ -7,7 +7,7 @@ class Y_CRVToken {
   constructor() {
     this.db = DB;
   }
-  async insertPrice() {
+  async insertPriceTokenIntoDB() {
     try {
       const response = await fetch(
         "https://api.coingecko.com/api/v3/simple/price?ids=curve-dao-token&vs_currencies=usd"
@@ -25,7 +25,7 @@ class Y_CRVToken {
     }
   }
 
-  async dataHandle(req, res) {
+  async getDataFromDB(req, res) {
     const sql = `SELECT * FROM Trendz.TrendzToken;`;
     return new Promise((resolve, reject) => {
       DB.query(sql, (err, result) => {

@@ -7,6 +7,8 @@ const SalesChart = () => {
   const { getTokenData } = UseTrendz();
   const [arrayBalance, setArrayBalance] = useState([]);
   const [arrayTime, setArrayTime] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     getData();
   }, []);
@@ -14,21 +16,17 @@ const SalesChart = () => {
   const getData = async () => {
     let array = await getTokenData();
     array.res?.map((item) => {
-      let number = parseInt(item.yCRVToken);
+      let number = Number(item.yCRVToken)
       setArrayBalance((old) => [...old, number]);
       setArrayTime((old) => [...old, item.TrendzDate]);
     });
-    console.log(arrayTime);
+    setLoading(false)
   };
   let series = [
     {
       name: "Quantity",
       data: arrayBalance,
     },
-    // {
-    //   name: "Oneplue 9",
-    //   data: [0, 1100000000, 32, 45, 32, 34, 52, 41],
-    //   },
   ];
 
   let options = {
@@ -57,18 +55,17 @@ const SalesChart = () => {
       <CardBody>
         <CardTitle tag="h5">Sales Summary</CardTitle>
         <CardSubtitle className="text-muted" tag="h6">
-          Yearly Sales Report
+          Annual Sales Report
         </CardSubtitle>
-        <Chart
+        {loading ? <div>Loading...</div> : <Chart
           type="area"
           width="100%"
           height="390"
           options={options}
           series={series}
-        ></Chart>
+        ></Chart>}
       </CardBody>
     </Card>
   );
 };
-
 export default SalesChart;

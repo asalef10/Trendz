@@ -54,14 +54,14 @@ const Starter = () => {
   const [tableData, setTableData] = useState([]);
   const [amount_yCRVToken, setAmount_yCRVToken] = useState(0);
   const { getBalance, getEventData } = UseApi();
-  
-    useEffect(async () => {
-      getData();
-    }, []);
 
-    useEffect(async () => {
-      getAmount_yCRVToken();
-    }, [isGetData]);
+  useEffect(async () => {
+    getData();
+  }, []);
+
+  useEffect(async () => {
+    getAmount_yCRVToken();
+  }, [isGetData]);
 
   const getData = async () => {
     let data = await getEventData();
@@ -71,7 +71,9 @@ const Starter = () => {
 
   const getAmount_yCRVToken = async () => {
     let amount_yCRV = await getBalance();
-    setAmount_yCRVToken(amount_yCRV);
+    let num = Number(amount_yCRV).toFixed(3);
+
+     setAmount_yCRVToken(num);
   };
   const handleTimer = () => {
     setInterval(() => {
