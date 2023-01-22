@@ -53,9 +53,9 @@ const SalesChart = () => {
   return (
     <Card>
       <CardBody>
-        <CardTitle tag="h5">Sales Summary</CardTitle>
+        <CardTitle tag="h5">Currency summary</CardTitle>
         <CardSubtitle className="text-muted" tag="h6">
-          Annual Sales Report
+          Currency report{" "}
         </CardSubtitle>
         {loading ? (
           <div style={{ display: "flex", justifyContent: "center" }}>
