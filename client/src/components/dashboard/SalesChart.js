@@ -10,17 +10,22 @@ const SalesChart = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    
     getData();
   }, []);
 
   const getData = async () => {
-    let array = await getTokenData();
-    array.res?.map((item) => {
-      let number = Number(item.yCRVToken);
-      setArrayBalance((old) => [...old, number]);
-      setArrayTime((old) => [...old, item.TrendzDate]);
-    });
-    setLoading(false);
+    try {
+      let array = await getTokenData();
+      array.res?.map((item) => {
+        let number = Number(item.yCRVToken);
+        setArrayBalance((old) => [...old, number]);
+        setArrayTime((old) => [...old, item.TrendzDate]);
+      });
+      setLoading(false);
+    } catch (err) {
+       console.log(err);
+    }
   };
   let series = [
     {
@@ -55,7 +60,7 @@ const SalesChart = () => {
       <CardBody>
         <CardTitle tag="h5">Currency summary</CardTitle>
         <CardSubtitle className="text-muted" tag="h6">
-          Currency report{" "}
+          Currency report
         </CardSubtitle>
         {loading ? (
           <div style={{ display: "flex", justifyContent: "center" }}>

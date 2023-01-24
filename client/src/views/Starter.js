@@ -134,13 +134,14 @@ const Starter = () => {
       {/***Table ***/}
       <Row>
         <Col lg="12">
+          
           <ProjectTables tableData={tableData.deposit} tableName="Deposit" />
           <ProjectTables tableData={tableData.withdraw} tableName="Withdraw" />
         </Col>
       </Row>
       {/***Blog Cards***/}
       <Row>
-        {BlogData.map((blg, index) => (
+        {BlogData?.map((blg, index) => (
           <Col sm="6" lg="6" xl="3" key={index}>
             <Blog
               image={blg.image}

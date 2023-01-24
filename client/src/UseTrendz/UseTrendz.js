@@ -3,7 +3,7 @@ import { useState } from "react";
 const UseTrendz = () => {
   const [isGetData, setIsGetData] = useState(false);
 
-  let URI = "http://localhost:5000/Trendz/";
+  let URI = "http://localhost:5000/";
   const getBalance = async () => {
     const response = await fetch(`${URI}getBalance`);
     const data = response.json();
