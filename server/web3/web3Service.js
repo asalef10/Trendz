@@ -24,6 +24,11 @@ class LiquidityData {
       const events = await contract.getPastEvents("Transfer", {
         fromBlock: this.fromBlockNumber,
         toBlock: "latest",
+        filter: {
+          blockNumber: {
+            gte: this.fromBlockNumber,
+          },
+        },
       });
       this.new_fromBlock_Number = events.at(-1).blockNumber;
       if (this.fromBlockNumber !== this.new_fromBlock_Number) {

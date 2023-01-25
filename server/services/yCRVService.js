@@ -16,6 +16,19 @@ class Y_CRVToken {
       console.log(err);
     }
   }
+  async DB_Select(req, res, sql) {
+    return new Promise((resolve, reject) => {
+      DB.query(sql, (err, result) => {
+        if (err) {
+          console.error(err);
+          reject(
+            res.status(500).json({ error: "Error querying the database" })
+          );
+        }
+        resolve(res.status(200).json({ res: result }));
+      });
+    });
+  }
   async insertDataFromEvent(_liquidityEvent) {
     try {
       this.liquidityEvent = _liquidityEvent;
@@ -75,19 +88,13 @@ class Y_CRVToken {
     }
   }
 
-  async getDataFromDB(req, res) {
-    const sql = `SELECT * FROM Trendz.TrendzToken;`;
-    return new Promise((resolve, reject) => {
-      DB.query(sql, (err, result) => {
-        if (err) {
-          console.error(err);
-          reject(
-            res.status(500).json({ error: "Error querying the database" })
-          );
-        }
-        resolve(res.status(200).json({ res: result }));
-      });
-    });
+  async get_YCRV_InfoFromDB(req, res) {
+    const sql = `SELECT * FROM Trendz.YCRV_Token_Info;`;
+    this.DB_Select(req, res, sql);
+  }
+  async get_poolLedger(req, res) {
+    const sql = `SELECT * FROM Trendz.YCRV_Pool_Ledger;`;
+    this.DB_Select(req, res, sql);
   }
 }
 
