@@ -17,10 +17,11 @@ const SalesChart = () => {
   const getData = async () => {
     try {
       let array = await getTokenData();
+      console.log(array);
       array.res?.map((item) => {
         let number = Number(item.yCRVToken);
         setArrayBalance((old) => [...old, number]);
-        setArrayTime((old) => [...old, item.TrendzDate]);
+        setArrayTime((old) => [...old, item.dateStore]);
       });
       setLoading(false);
     } catch (err) {

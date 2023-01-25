@@ -18,31 +18,25 @@ class LiquidityData {
   counterBlock(blockNumber) {
     this.fromBlockNumber = blockNumber;
   }
-  async eventData() {
+  // 16483865
+  // 16483779
+  async getPastEventsInBlockRange() {
     try {
       let eventData = [];
-      const events = await contract.getPastEvents("Transfer", {
-        fromBlock: this.fromBlockNumber,
-        toBlock: "latest",
-        filter: {
-          blockNumber: {
-            gte: this.fromBlockNumber,
-          },
-        },
-      });
-      this.new_fromBlock_Number = events.at(-1).blockNumber;
-      if (this.fromBlockNumber !== this.new_fromBlock_Number) {
-        this.counterBlock(this.new_fromBlock_Number);
+      const currentBlockNumber = await web3.eth.getBlockNumber();
+      if (currentBlockNumber > this.fromBlockNumber) {
+        const events = await contract.getPastEvents("Transfer", {
+          fromBlock: this.fromBlockNumber,
+          toBlock: this.fromBlockNumber + 1000,
+        });
+        this.fromBlockNumber = this.fromBlockNumber + 1000;
         events.map((item) => {
           let convertValue = web3.utils.fromWei(item.returnValues.value);
           item.returnValues.value = convertValue;
           eventData.push(item.returnValues);
         });
-
-        return eventData;
-      } else {
-        return [];
       }
+      return eventData;
     } catch (err) {
       console.log(err);
     }
@@ -64,3 +58,6 @@ class LiquidityData {
 module.exports = {
   LiquidityData,
 };
+
+
+

@@ -29,46 +29,45 @@ class Y_CRVToken {
       });
     });
   }
+  async get_poolLedger(req, res) {
+    const sql = `SELECT * FROM Trendz.YCRV_Pool_Ledger;`;
+    this.DB_Select(req, res, sql);
+  }
+  async get_YCRV_InfoFromDB(req, res) {
+    const sql = `SELECT * FROM Trendz.YCRV_Token_Info;`;
+    this.DB_Select(req, res, sql);
+  }
   async insertDataFromEvent(_liquidityEvent) {
     try {
       this.liquidityEvent = _liquidityEvent;
       const currentDateTime = moment().tz(timezone).format("YYYY-MM-DD HH:mm");
       const sender_yCRVAddress = "0x0000000000000000000000000000000000000000";
-      let amountIn = 0;
-      let amountOut = 0;
-      let data = await this.liquidityEvent?.eventData(this.liquidityEvent);
+      let blockExpenses = 0;
+      let blockRevenues = 0;
+      let data = await this.liquidityEvent?.getPastEventsInBlockRange(
+        this.liquidityEvent
+      );
       if (data[0]) {
-        data?.map((item) => {
+        data.map((item) => {
           if (item.sender === sender_yCRVAddress) {
             let value = +Number(item.value).toFixed(3);
-            amountOut += value;
-            console.log(item);
-            if (item.sender === sender_yCRVAddress) {
-              const sql = `INSERT INTO Trendz.YCRV_Pool_Ledger (deposit, withdraw,value) VALUES ('${""}','${
-                item.receiver
-              }','${item.value}')`;
-              this.DB_Insert(sql);
-            } else {
-              const sql = `INSERT INTO Trendz.YCRV_Pool_Ledger (deposit, withdraw,value) VALUES ('${
-                item.receiver
-              }','${""}','${item.value}')`;
-              this.DB_Insert(sql);
-            }
+            blockExpenses += value;
+            const sql = `INSERT INTO Trendz.YCRV_Pool_Ledger ( withdraw,value) VALUES ('${item.receiver}','${item.value}')`;
+            this.DB_Insert(sql);
           } else if (item.sender !== sender_yCRVAddress) {
             let value = +Number(item.value).toFixed(3);
-            amountIn += value;
+            blockRevenues += value;
+            const sql = `INSERT INTO Trendz.YCRV_Pool_Ledger (deposit,value) VALUES ('${item.receiver}','${item.value}')`;
+            this.DB_Insert(sql);
           }
-        }, []);
-        amountOut = +amountOut.toFixed(3);
-        amountIn = +amountIn.toFixed(3);
-        const sql = `INSERT INTO Trendz.YCRV_Token_Liquidity (amountOut_tokenLiquidity, amountIn_tokeLiquidity,date) VALUES ('${amountOut}','${amountIn}','${currentDateTime}')`;
+        });
+        const sql = `INSERT INTO Trendz.YCRV_Token_Liquidity (amountOut_tokenLiquidity, amountIn_tokeLiquidity,date) VALUES ('${blockExpenses}','${blockRevenues}','${currentDateTime}')`;
         this.DB_Insert(sql);
       }
     } catch (err) {
       console.log(err);
     }
   }
-
   async insertPriceTokenIntoDB() {
     try {
       const currentDateTime = moment().tz(timezone).format("YYYY-MM-DD HH:mm");
@@ -87,15 +86,16 @@ class Y_CRVToken {
       console.log("Error fetching and inserting the price");
     }
   }
-
-  async get_YCRV_InfoFromDB(req, res) {
-    const sql = `SELECT * FROM Trendz.YCRV_Token_Info;`;
-    this.DB_Select(req, res, sql);
-  }
-  async get_poolLedger(req, res) {
-    const sql = `SELECT * FROM Trendz.YCRV_Pool_Ledger;`;
-    this.DB_Select(req, res, sql);
-  }
 }
-
 module.exports = { Y_CRVToken };
+
+// example
+
+// Result {
+//   '0': '0x0000000000000000000000000000000000000000',
+//   '1': '0x796836732f8086F95e7DEF593B189f315F899889',
+//   '2': '81348955953372124414',
+//   sender: '0x0000000000000000000000000000000000000000',
+//   receiver: '0x796836732f8086F95e7DEF593B189f315F899889',
+//   value: '81.348955953372124414'
+// }

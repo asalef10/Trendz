@@ -16,13 +16,16 @@ const PORT = process.env.PORT;
 
 let liquidityEvent = new LiquidityData();
 
-cron.schedule("*/2 * * * *", () => {
-  new Y_CRVToken().insertPriceTokenIntoDB();
-});
+// cron.schedule("*/2 * * * *", () => {
+//   new Y_CRVToken().insertPriceTokenIntoDB();
+// });
 
-cron.schedule("*/5 * * * *", () => {
-  new Y_CRVToken().insertDataFromEvent(liquidityEvent);
-});
+setInterval(()=>{
+  // new Y_CRVToken().insertDataFromEvent(liquidityEvent);
+
+},2000)
+// cron.schedule("*/5 * * * *", () => {
+// });
 
 app.use("/", appRouting);
 app.get("/", (req, res) => {
