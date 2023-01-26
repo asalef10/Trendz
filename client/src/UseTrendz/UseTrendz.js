@@ -5,26 +5,57 @@ const UseTrendz = () => {
 
   let URI = "http://localhost:5000/";
   const getBalance = async () => {
-    const response = await fetch(`${URI}getBalance`);
-    const data = response.json();
-    return data;
+    try {
+      const response = await fetch(`${URI}getBalance`);
+      const data = response.json();
+      return data;
+    } catch (err) {
+      console.log(err);
+    }
   };
   const getEventData = async () => {
-    const response = await fetch(`${URI}getEvent`);
-    const data = response.json();
-    return data;
+    try {
+      // const response = await fetch(`${URI}getEvent`);
+      // const data = response.json();
+      return [];
+    } catch (err) {
+      console.log(err);
+    }
   };
   const getTokenData = async () => {
-    const response = await fetch(`${URI}getTokenData`);
-    const data = response.json();
-    return data;
+    try {
+      const response = await fetch(`${URI}getTokenData`);
+      const data = response.json();
+      return data;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const getLedgerPoolData = async (_timeRange) => {
+    try {
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "content-length": "355",
+          "content-type": "application/json; charset=utf-8",
+        },
+        body: JSON.stringify({
+          timeRange:_timeRange
+        }),
+      };
+      const response = await fetch(`${URI}getLedger`,requestOptions);
+      const data = response.json();
+      return data;
+    } catch (err) {
+      console.log(err);
+    }
   };
   return {
     getBalance,
     getEventData,
     getTokenData,
-    isGetData,
     setIsGetData,
+    getLedgerPoolData,
   };
 };
 export default UseTrendz;

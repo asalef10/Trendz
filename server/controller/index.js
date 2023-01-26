@@ -12,17 +12,6 @@ const getBalance = async (req, res) => {
   }
 };
 
-const getEvent = async (req, res) => {
-  try {
-    let poolLedger = new Y_CRVToken();
-    const data = await poolLedger.get_poolLedger(req, res);
-    return data;
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: err.message });
-  }
-};
-
 const getTokenData = async (req, res) => {
   try {
     let tokenData = new Y_CRVToken(req, res);
@@ -33,9 +22,19 @@ const getTokenData = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
+const getRecentPoolLedger = async (req, res) => {
+  try {
+    const timeRange = req.body.timeRange;
+    let ledgerPool = new Y_CRVToken(req, res);
+    let data = ledgerPool.get_poolLedger(req, res, timeRange);
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 module.exports = {
   getBalance,
-  getEvent,
   getTokenData,
+  getRecentPoolLedger,
 };

@@ -29,10 +29,22 @@ class Y_CRVToken {
       });
     });
   }
-  async get_poolLedger(req, res) {
-    const sql = `SELECT * FROM Trendz.YCRV_Pool_Ledger;`;
-    this.DB_Select(req, res, sql);
+  async get_poolLedger(req, res, timeRange) {
+    try {
+
+      let sql;
+      
+      if (timeRange === "24 hours") {
+        sql = `SELECT amountOut_tokenLiquidity,amountIn_tokeLiquidity,date FROM Trendz.YCRV_Token_Liquidity WHERE date >= DATE_SUB(NOW(), INTERVAL 3 DAY);`
+      } else if (timeRange === "3 days") {
+        sql = `SELECT amountOut_tokenLiquidity,amountIn_tokeLiquidity,date FROM Trendz.YCRV_Token_Liquidity WHERE date >= DATE_SUB(NOW(), INTERVAL 3 DAY);`
+      }
+      this.DB_Select(req, res, sql);
+    } catch (err) {
+      console.log(err);
+    }
   }
+
   async get_YCRV_InfoFromDB(req, res) {
     const sql = `SELECT * FROM Trendz.YCRV_Token_Info;`;
     this.DB_Select(req, res, sql);
