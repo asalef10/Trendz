@@ -45,7 +45,7 @@ const query_Select_insert =(sql) =>{
       });
     }
 
-const query_Query_handle = async (range, type) => {
+const query_Leger_handle = async (range, type) => {
   try {
     let sql;
     if (type === "Token") {
@@ -80,6 +80,6 @@ module.exports = {
   query_insertDataFromEvent_TransactionsTB,
   query_insertDataFromEvent_LiquidityTB,
   query_insertPriceTokenIntoDB,
-  query_Query_handle,
+  query_Leger_handle,
   query_Select_insert
 };

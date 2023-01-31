@@ -7,7 +7,7 @@ const {
   query_insertDataFromEvent_TransactionsTB,
   query_insertDataFromEvent_LiquidityTB,
   query_insertPriceTokenIntoDB,
-  query_Query_handle,
+  query_Leger_handle,
   query_Select_insert
 } = require("./sql");
 class Y_CRVToken {
@@ -19,7 +19,7 @@ class Y_CRVToken {
     try {
       const type = req.body.type;
       const timeRange = req.body.timeRange;
-      let response = await  query_Query_handle(timeRange, type);
+      let response = await  query_Leger_handle(timeRange, type);
       const data = response;
       res.status(200).json({ response: data });
     } catch (err) {
