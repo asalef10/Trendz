@@ -1,6 +1,14 @@
 const { Y_CRVToken } = require("../services/yCRVService");
 const { LiquidityData } = require("../web3/web3Service");
 
+const trendzApi = (req, res) => {
+  try {
+    res.status(200).json("Welcome To Trendz");
+  } catch (err) {
+    res.status(500).json("Error With Server");
+    console.log(err);
+  }
+};
 const getBalance = async (req, res) => {
   try {
     let web3BalanceService = new LiquidityData(req, res);
@@ -11,22 +19,19 @@ const getBalance = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
-
-const getTokenData = async (req, res) => {
+const getRecentPoolLedger = async (req, res) => {
   try {
-    let tokenData = new Y_CRVToken(req, res);
-    const data = await tokenData.get_YCRV_InfoFromDB(req, res);
+    let ledgerPool = new Y_CRVToken(req, res);
+    let data = ledgerPool.get_Ledger(req, res);
     return data;
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ error: err.message });
   }
 };
-const getRecentPoolLedger = async (req, res) => {
+const getTotalAddressTx = async (req, res) => {
   try {
-    const timeRange = req.body.timeRange;
-    let ledgerPool = new Y_CRVToken(req, res);
-    let data = ledgerPool.get_poolLedger(req, res, timeRange);
+    const txPool = new Y_CRVToken(req, res);
+    const data = txPool.totalAddressTx(req, res);
     return data;
   } catch (err) {
     console.log(err);
@@ -35,6 +40,7 @@ const getRecentPoolLedger = async (req, res) => {
 
 module.exports = {
   getBalance,
-  getTokenData,
   getRecentPoolLedger,
+  getTotalAddressTx,
+  trendzApi
 };

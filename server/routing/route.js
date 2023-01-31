@@ -1,6 +1,8 @@
 const routing = require("express").Router();
 const controller = require("../controller/index");
+routing.get("/", controller.trendzApi);
 routing.get("/getBalance", controller.getBalance);
 routing.post("/getLedger", controller.getRecentPoolLedger);
-routing.get("/getTokenData", controller.getTokenData);
+routing.get("/getTotalAddressTx", controller.getTotalAddressTx);
 module.exports = routing;
+ 

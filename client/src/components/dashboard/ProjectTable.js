@@ -7,29 +7,29 @@ import {
   Spinner,
 } from "reactstrap";
 
-const ProjectTables = ({ tableData, tableName }) => {
+const ProjectTables = ({ tableData, tableName, subtitle }) => {
   return (
     <>
       <Card>
         <CardBody>
-          <CardTitle tag="h5">{tableName}</CardTitle>
-          <CardSubtitle className="mb-2 text-muted" tag="h6">
-            Overview of the projects
+          <CardTitle style={{textAlign:"center"}} tag="h5">{tableName}</CardTitle>
+          <CardSubtitle style={{textAlign:"center"}} className="mb-2 text-muted" tag="h6">
+            {subtitle}
           </CardSubtitle>
           {tableData ? (
             <Table className="no-wrap mt-3 align-middle" responsive borderless>
               <thead>
                 <tr>
-                  <th>sender</th>
-                  <th>receiver</th>
-                  <th>value</th>
+                  <th>Address</th>
+                  <th>Value</th>
                 </tr>
               </thead>
               <tbody>
                 {tableData?.map((tdata, index) => (
                   <tr key={index} className="border-top">
-                    <td>{tdata.sender}</td>
-                    <td>{tdata.receiver}</td>
+                    <a target={"_blank"} href={`https://etherscan.io/token/${tdata.address}`}>
+                      <td>{tdata.address}</td>
+                    </a>
                     <td>{tdata.value}</td>
                   </tr>
                 ))}

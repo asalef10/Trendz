@@ -9,20 +9,17 @@ import {
 import Chart from "react-apexcharts";
 import UseTrendz from "../../UseTrendz/UseTrendz";
 import { useEffect, useState } from "react";
+import ButtonGroup from "../fetchers/ButtonGroup";
 
 const SalesChart = () => {
-  const { getTokenData, getLedgerPoolData } = UseTrendz();
-  const [arrayBalance, setArrayBalance] = useState([]);
-  const [arrayTime, setArrayTime] = useState([]);
+  const { getLedgerPoolData } = UseTrendz();
   const [loading, setLoading] = useState(true);
-  const [seriesOBJOne, setSeriesOBJOne] = useState({});
-  const [seriesOBJTwo, setSeriesOBJTwo] = useState({});
   const [isOn, setIsOn] = useState(false);
   const [titleChart, setTitleChart] = useState("Currency report");
-
-  useEffect(() => {
-    getTokenInfo_chart();
-  }, []);
+  const [arrayTime, setArrayTime] = useState([]);
+  const [arrayBalance, setArrayBalance] = useState([]);
+  const [seriesOBJOne, setSeriesOBJOne] = useState({});
+  const [seriesOBJTwo, setSeriesOBJTwo] = useState({});
 
   const restAllState = () => {
     setArrayBalance([]);
@@ -30,66 +27,58 @@ const SalesChart = () => {
     setSeriesOBJOne({});
     setSeriesOBJTwo({});
   };
-  const getTokenInfo_chart = async () => {
+  const getData = async (range, type) => {
     try {
-      setLoading(true);
-      let array = await getTokenData();
-      array.res?.map((item) => {
-        let number = Number(item.yCRVToken);
-        setArrayBalance((old) => [...old, number]);
-        setArrayTime((old) => [...old, item.dateStore]);
-      });
-      setLoading(false);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  const getPoolLedger_chart = async (range) => {
-    try {
-      if (range === "24 hours") {
-        setTitleChart("Ledger pool last - 24 hours  ");
-      } else if (range === "3 days") {
-        setTitleChart("Ledger pool last - 3 days  ");
-      }
       restAllState();
       setLoading(true);
-      let array = await getLedgerPoolData(range);
-      array.res?.map((item) => {
-        let amountIntNumbers = Number(item.amountIn_tokeLiquidity);
-        let amountOutNumbers = Number(item.amountOut_tokenLiquidity);
-        setArrayTime((old) => [...old, item.date]);
-        setSeriesOBJOne((old) => ({
+      let array = await getLedgerPoolData(type, range);
+      if (type === "Token") {
+        setArrayTime(Object.keys(array.response));
+        setArrayBalance(Object.values(array.response));
+      } else {
+        console.log(array);
+        setSeriesOBJOne(() => ({
           name: "AmountIn",
-          data: old.data ? [...old.data, amountIntNumbers] : [amountIntNumbers],
+          data: array.response[0],
         }));
-        setSeriesOBJTwo((old) => ({
+        setSeriesOBJTwo(() => ({
           name: "AmountOut",
-          data: old.data ? [...old.data, amountOutNumbers] : [amountOutNumbers],
+          data: array.response[1],
         }));
-      });
+        setArrayTime(array.response[2]);
+      }
       setLoading(false);
     } catch (err) {
       console.log(err);
     }
   };
-  const replaceChart = async () => {
-    if (!isOn) {
-      restAllState();
-      getPoolLedger_chart("24 hours");
-      setIsOn((prev) => !prev);
-    } else {
-      setTitleChart("Currency report");
-      setLoading(false);
-      getTokenInfo_chart();
-      setIsOn((prev) => !prev);
-    }
-  };
-  function createSeriesObject({ name, data }) {
+
+  const createSeriesObject = ({ name, data }) => {
     return { name, data };
-  }
+  };
+
   let series = isOn
     ? [createSeriesObject(seriesOBJOne), createSeriesObject(seriesOBJTwo)]
     : [createSeriesObject({ name: "Quantity", data: arrayBalance })];
+
+  const replaceChart = async () => {
+    try {
+      if (!isOn) {
+        setTitleChart("Ledger pool last - 24 hours ");
+        getData("1 DAY", "Ledger");
+      } else {
+        setTitleChart("Currency report");
+        getData("1 DAY", "Token");
+      }
+      setIsOn((prev) => !prev);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    getData("1 DAY", "Token");
+  }, []);
 
   let options = {
     chart: {
@@ -98,6 +87,10 @@ const SalesChart = () => {
     dataLabels: {
       enabled: false,
     },
+    animations: {
+      enabled: !loading,
+    },
+
     grid: {
       strokeDashArray: 3,
     },
@@ -113,38 +106,38 @@ const SalesChart = () => {
   };
   return (
     <>
-      {isOn ? (
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <Button onClick={replaceChart} color="success">
-            Currency report
-          </Button>
-          <Button
-            onClick={() => {
-              getPoolLedger_chart("3 days");
-            }}
-            color="info"
-          >
-            Last 3 days
-          </Button>
-          <Button
-            onClick={() => {
-              getPoolLedger_chart("24 hours");
-            }}
-            color="info"
-          >
-            Last 24 hours
-          </Button>
-        </div>
-      ) : (
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
         <Button onClick={replaceChart} color="success">
-          Pool report
+          {!isOn ? "Pool report" : " Currency report"}
         </Button>
-      )}
+        {isOn && (
+          <>
+            <ButtonGroup
+              threeDaysHandle={() => {
+                getData("3 DAY", "Ledger");
+              }}
+              oneDayHandle={() => {
+                getData("1 DAY", "Ledger");
+              }}
+            />
+          </>
+        )}
+
+      {!isOn && (
+        <ButtonGroup
+        threeDaysHandle={() => {
+          getData("3 DAY", "Token");
+        }}
+        oneDayHandle={() => {
+          getData("1 DAY", "Token");
+        }}
+        />
+        )}
+        </div>
       <Card>
         <CardBody>
           <CardTitle tag="h5">{titleChart}</CardTitle>
           <CardSubtitle className="text-muted" tag="h6">
-            {/* Currency report */}
           </CardSubtitle>
           {loading ? (
             <div style={{ display: "flex", justifyContent: "center" }}>

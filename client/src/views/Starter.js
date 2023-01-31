@@ -49,7 +49,7 @@ const BlogData = [
 
 const Starter = () => {
   const FIVE_MIN = 1000 * 60 * 5;
-  const { isGetData, setIsGetData } = UseTrendz();
+  const { isGetData, setIsGetData, getTotalAddressTx } = UseTrendz();
 
   const [tableData, setTableData] = useState([]);
   const [amount_yCRVToken, setAmount_yCRVToken] = useState(0);
@@ -64,7 +64,8 @@ const Starter = () => {
   }, [isGetData]);
 
   const getData = async () => {
-    let data = await getEventData();
+   
+    let data = await getTotalAddressTx();
     setTableData(data);
     handleTimer();
   };
@@ -73,7 +74,7 @@ const Starter = () => {
     let amount_yCRV = await getBalance();
     let num = Number(amount_yCRV).toFixed(3);
 
-     setAmount_yCRVToken(num);
+    setAmount_yCRVToken(num);
   };
   const handleTimer = () => {
     setInterval(() => {
@@ -134,13 +135,25 @@ const Starter = () => {
       {/***Table ***/}
       <Row>
         <Col lg="12">
-          
-          <ProjectTables tableData={tableData.deposit} tableName="Deposit" />
-          <ProjectTables tableData={tableData.withdraw} tableName="Withdraw" />
+          <div style={{display:"flex"}}>
+
+          <ProjectTables
+            tableData={tableData[0]?.deposit}
+            tableName="Deposit"
+            subtitle={"Total 5 address that deposited the most"}
+            />
+            &nbsp;
+            &nbsp; 
+          <ProjectTables
+            tableData={tableData[1]?.withdraw}
+            tableName="Withdraw"
+            subtitle={"Total 5 address that withdraw the most"}
+            /> 
+            </div>
         </Col>
       </Row>
       {/***Blog Cards***/}
-      <Row>
+      {/* <Row>
         {BlogData?.map((blg, index) => (
           <Col sm="6" lg="6" xl="3" key={index}>
             <Blog
@@ -152,7 +165,7 @@ const Starter = () => {
             />
           </Col>
         ))}
-      </Row>
+      </Row> */}
     </div>
   );
 };
