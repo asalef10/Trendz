@@ -1,5 +1,5 @@
 
-const DB = require("../connectDB/DB");
+const DB = require("../../connectDB/DB");
 let moment = require("moment");
 const {
   query_Deposit,
@@ -85,7 +85,7 @@ class Y_CRVToken {
       const deposit = await  query_Select_insert( query_Deposit);
       const withdraw = await  query_Select_insert( query_Withdraw);
       return res.status(200).json([
-        { type: "deposit", deposit: deposit },
+        { type: "deposit", deposit: deposit }, 
         { type: "withdraw", withdraw: withdraw },
       ]);
     } catch (err) {
@@ -93,4 +93,4 @@ class Y_CRVToken {
     }
   }
 }
-module.exports = { Y_CRVToken };
+module.exports = { Y_CRVToken }; 

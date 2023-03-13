@@ -1,6 +1,6 @@
 import { Button } from "reactstrap";
 
-const ButtonGroup = ({oneDayHandle, threeDaysHandle }) => {
+const ButtonGroup = ({oneDayHandle, threeDaysHandle,threeMonthsHandle }) => {
   return (
     <>
 
@@ -29,7 +29,7 @@ const ButtonGroup = ({oneDayHandle, threeDaysHandle }) => {
         <Button
           className="btn"
           onClick={() => {
-            threeDaysHandle();
+            threeMonthsHandle();
           }}
           color="primary"
         >

@@ -1,5 +1,6 @@
-const { Y_CRVToken } = require("../services/yCRVService");
+const { Y_CRVToken } = require("../services/y_crv/ycrv_Service");
 const { LiquidityData } = require("../web3/web3Service");
+
 
 const trendzApi = (req, res) => {
   try {
@@ -11,7 +12,7 @@ const trendzApi = (req, res) => {
 };
 const getBalance = async (req, res) => {
   try {
-    let web3BalanceService = new LiquidityData(req, res);
+    const web3BalanceService = new LiquidityData(req, res); 
     const tokenBalance = await web3BalanceService.balanceToken(req, res);
     return tokenBalance;
   } catch (err) {
@@ -21,8 +22,8 @@ const getBalance = async (req, res) => {
 };
 const getRecentPoolLedger = async (req, res) => {
   try {
-    let ledgerPool = new Y_CRVToken(req, res);
-    let data = ledgerPool.get_Ledger(req, res);
+    const ledgerPool = new Y_CRVToken(req, res);
+    const data = ledgerPool.get_Ledger(req, res);
     return data;
   } catch (err) {
     console.log(err);
@@ -42,5 +43,5 @@ module.exports = {
   getBalance,
   getRecentPoolLedger,
   getTotalAddressTx,
-  trendzApi
+  trendzApi,
 };

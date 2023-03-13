@@ -16,58 +16,51 @@ const SalesChart = () => {
   const [loading, setLoading] = useState(true);
   const [isOn, setIsOn] = useState(false);
   const [titleChart, setTitleChart] = useState("Currency report");
-  const [arrayTime, setArrayTime] = useState([]);
-  const [arrayBalance, setArrayBalance] = useState([]);
-  const [seriesOBJOne, setSeriesOBJOne] = useState({});
-  const [seriesOBJTwo, setSeriesOBJTwo] = useState({});
+  const [arrayDate, setArrayDate] = useState([]);
+  const [series, setSeries] = useState([]);
+  const [cache, setCache] = useState([]);
 
-  const restAllState = () => {
-    setArrayBalance([]);
-    setArrayTime([]);
-    setSeriesOBJOne({});
-    setSeriesOBJTwo({});
-  };
   const getData = async (range, type) => {
     try {
-      restAllState();
       setLoading(true);
       let array = await getLedgerPoolData(type, range);
       if (type === "Token") {
-        setArrayTime(Object.keys(array.response));
-        setArrayBalance(Object.values(array.response));
+        setTitleChart(`Currency report last - ${range} `); 
+        let time = Object.keys(array.response);
+        setArrayDate(time);
+        let Quantity = Object.values(array.response);
+        setSeries([
+          {
+            name: "Quantity",
+            data: Quantity,
+          },
+        ]);
+       
       } else {
-        console.log(array);
-        setSeriesOBJOne(() => ({
-          name: "AmountIn",
-          data: array.response[0],
-        }));
-        setSeriesOBJTwo(() => ({
-          name: "AmountOut",
-          data: array.response[1],
-        }));
-        setArrayTime(array.response[2]);
+        setTitleChart(`Ledger pool last - ${range} `);
+        setSeries([
+          {
+            name: "AmountIn",
+            data: array.response[0],
+          },
+          {
+            name: "AmountOut",
+            data: array.response[1],
+          },
+        ]);
+        setArrayDate(array.response[2]);
       }
       setLoading(false);
     } catch (err) {
+      setLoading(false);
       console.log(err);
     }
   };
-
-  const createSeriesObject = ({ name, data }) => {
-    return { name, data };
-  };
-
-  let series = isOn
-    ? [createSeriesObject(seriesOBJOne), createSeriesObject(seriesOBJTwo)]
-    : [createSeriesObject({ name: "Quantity", data: arrayBalance })];
-
   const replaceChart = async () => {
     try {
       if (!isOn) {
-        setTitleChart("Ledger pool last - 24 hours ");
         getData("1 DAY", "Ledger");
       } else {
-        setTitleChart("Currency report");
         getData("1 DAY", "Token");
       }
       setIsOn((prev) => !prev);
@@ -75,12 +68,11 @@ const SalesChart = () => {
       console.log(err);
     }
   };
-
   useEffect(() => {
     getData("1 DAY", "Token");
   }, []);
 
-  let options = {
+  let options = { 
     chart: {
       type: "area",
     },
@@ -101,14 +93,14 @@ const SalesChart = () => {
     },
 
     xaxis: {
-      categories: arrayTime,
+      categories: arrayDate,
     },
   };
   return (
     <>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <Button onClick={replaceChart} color="success">
-          {!isOn ? "Pool report" : " Currency report"}
+          {!isOn ? "Display pool report" : "Display Currency report"}
         </Button>
         {isOn && (
           <>
@@ -119,26 +111,31 @@ const SalesChart = () => {
               oneDayHandle={() => {
                 getData("1 DAY", "Ledger");
               }}
+              threeMonthsHandle={() => {
+                getData("3 MONTH", "Ledger");
+              }}
             />
           </>
         )}
 
-      {!isOn && (
-        <ButtonGroup
-        threeDaysHandle={() => {
-          getData("3 DAY", "Token");
-        }}
-        oneDayHandle={() => {
-          getData("1 DAY", "Token");
-        }}
-        />
+        {!isOn && (
+          <ButtonGroup
+            threeDaysHandle={() => {
+              getData("3 DAY", "Token");
+            }}
+            oneDayHandle={() => {
+              getData("1 DAY", "Token");
+            }}
+            threeMonthsHandle={() => {
+              getData("3 MONTH", "Token");
+            }}
+          />
         )}
-        </div>
+      </div>
       <Card>
         <CardBody>
           <CardTitle tag="h5">{titleChart}</CardTitle>
-          <CardSubtitle className="text-muted" tag="h6">
-          </CardSubtitle>
+          <CardSubtitle className="text-muted" tag="h6"></CardSubtitle>
           {loading ? (
             <div style={{ display: "flex", justifyContent: "center" }}>
               <Spinner />

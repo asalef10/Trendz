@@ -10,7 +10,7 @@ ReactDOM.render(
   <Suspense fallback={<Loader />}>
     <HashRouter>
       <App />
-    </HashRouter>
+    </HashRouter> 
   </Suspense>,
 
   document.getElementById("root")

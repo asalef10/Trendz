@@ -6,14 +6,19 @@ import {
   Table,
   Spinner,
 } from "reactstrap";
-
 const ProjectTables = ({ tableData, tableName, subtitle }) => {
   return (
     <>
       <Card>
         <CardBody>
-          <CardTitle style={{textAlign:"center"}} tag="h5">{tableName}</CardTitle>
-          <CardSubtitle style={{textAlign:"center"}} className="mb-2 text-muted" tag="h6">
+          <CardTitle style={{ textAlign: "center" }} tag="h5">
+            {tableName}
+          </CardTitle>
+          <CardSubtitle
+            style={{ textAlign: "center" }}
+            className="mb-2 text-muted"
+            tag="h6"
+          >
             {subtitle}
           </CardSubtitle>
           {tableData ? (
@@ -25,14 +30,22 @@ const ProjectTables = ({ tableData, tableName, subtitle }) => {
                 </tr>
               </thead>
               <tbody>
-                {tableData?.map((tdata, index) => (
-                  <tr key={index} className="border-top">
-                    <a target={"_blank"} href={`https://etherscan.io/token/${tdata.address}`}>
-                      <td>{tdata.address}</td>
-                    </a>
-                    <td>{tdata.value}</td>
-                  </tr>
-                ))}
+                {tableData?.map((tdata, index) => {
+                  const { address, value } = tdata;
+                  return (
+                    <tr key={index} className="border-top">
+                      <td>
+                        <a
+                          target="_blank"
+                          href={`https://etherscan.io/token/${address}`}
+                        >
+                          {address}
+                        </a>
+                      </td>
+                      <td>{value}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </Table>
           ) : (

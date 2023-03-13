@@ -1,4 +1,4 @@
-const DB = require("../connectDB/DB");
+const DB = require("../../connectDB/DB");
 
 const query_Deposit = `SELECT address, SUM(value) as 'value'
       FROM Trendz.YCRV_Pool_Transactions
@@ -17,6 +17,11 @@ const query_Withdraw = `SELECT address, SUM(value) as 'value'
       ORDER BY value DESC
       LIMIT 5
       `;
+const quey_lastThreeMonthsPrices = `SELECT date(dateStore) AS dateStore, ROUND(AVG(yCRVToken), 3) AS yCRVToken
+FROM Trendz.YCRV_Token_Info
+WHERE dateStore >= DATE_SUB(NOW(), INTERVAL 3 MONTH)
+GROUP BY date(dateStore);
+`;
 
 const query_insertDataFromEvent_TransactionsTB = (item, type) => {
   return `INSERT INTO Trendz.YCRV_Pool_Transactions ( address,value,type) VALUES ('${item.receiver}','${item.value}','${type}')`;
@@ -32,31 +37,35 @@ const query_insertPriceTokenIntoDB = (price, currentDateTime) => {
   return `INSERT INTO Trendz.YCRV_Token_Info (yCRVToken, dateStore) VALUES ('${price}','${currentDateTime}')`;
 };
 
-const query_Select_insert =(sql) =>{
-      return new Promise((resolve, reject) => {
-        DB.query(sql, (err, result) => {
-          if (err) {
-            console.error(err);
-            reject(err);
-          }
-          console.log("Method success");
-          resolve(result);
-        });
-      });
-    }
+const query_Select_insert = (sql) => {
+  return new Promise((resolve, reject) => {
+    DB.query(sql, (err, result) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      }
+      console.log("Method success");
+      resolve(result);
+    });
+  });
+};
 
 const query_Leger_handle = async (range, type) => {
-  try {
+  try { 
     let sql;
     if (type === "Token") {
-      sql = `SELECT yCRVToken, dateStore,dateStore FROM Trendz.YCRV_Token_Info WHERE dateStore >= DATE_SUB(NOW(), INTERVAL ${range});`;
+      if (range == "3 MONTH") {
+        sql = quey_lastThreeMonthsPrices;
+      } else { 
+        sql = `SELECT yCRVToken, dateStore,dateStore FROM Trendz.YCRV_Token_Info WHERE dateStore >= DATE_SUB(NOW(), INTERVAL ${range});`;
+      }
       const result = await query_Select_insert(sql);
       const dataObject = result.reduce((acc, curr) => {
         return { ...acc, [curr.dateStore]: curr.yCRVToken };
       }, {});
       return dataObject;
     } else {
-      sql = `SELECT amountOut_tokenLiquidity,amountIn_tokeLiquidity,date FROM Trendz.YCRV_Token_Liquidity WHERE date >= DATE_SUB(NOW(), INTERVAL ${range});`;
+      sql = `SELECT amountOut_tokenLiquidity,amountIn_tokeLiquidity,date FROM Trendz.YCRV_Token_Liquidity WHERE date >= DATE_SUB(NOW(), INTERVAL ${range}) ;`;
       const result = await query_Select_insert(sql);
       const data = result.reduce(
         (acc, curr) => {
@@ -74,6 +83,7 @@ const query_Leger_handle = async (range, type) => {
   }
 };
 
+
 module.exports = {
   query_Deposit,
   query_Withdraw,
@@ -81,5 +91,5 @@ module.exports = {
   query_insertDataFromEvent_LiquidityTB,
   query_insertPriceTokenIntoDB,
   query_Leger_handle,
-  query_Select_insert
+  query_Select_insert,
 };

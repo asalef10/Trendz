@@ -51,23 +51,29 @@ const Starter = () => {
   const FIVE_MIN = 1000 * 60 * 5;
   const { isGetData, setIsGetData, getTotalAddressTx } = UseTrendz();
 
-  const [tableData, setTableData] = useState([]);
-  const [amount_yCRVToken, setAmount_yCRVToken] = useState(0);
-  const { getBalance, getEventData } = UseApi();
+  const [tableData, setTableData] = useState([
+    { type: "deposit", deposit: [] },
+    { type: "withdraw", withdraw: [] },
+  ]);
+  const [amount_yCRVToken, setAmount_yCRVToken] = useState("Loading...");
+  const { getBalance } = UseApi();
 
-  useEffect(async () => {
+  useEffect(() => {
     getData();
   }, []);
 
-  useEffect(async () => {
+  useEffect(() => {
     getAmount_yCRVToken();
   }, [isGetData]);
 
   const getData = async () => {
-   
-    let data = await getTotalAddressTx();
-    setTableData(data);
-    handleTimer();
+    try {
+      let data = await getTotalAddressTx();
+      setTableData(data);
+      handleTimer();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const getAmount_yCRVToken = async () => {
@@ -135,21 +141,19 @@ const Starter = () => {
       {/***Table ***/}
       <Row>
         <Col lg="12">
-          <div style={{display:"flex"}}>
-
-          <ProjectTables
-            tableData={tableData[0]?.deposit}
-            tableName="Deposit"
-            subtitle={"Total 5 address that deposited the most"}
+          <div style={{ display: "flex" }}>
+            <ProjectTables
+              tableData={tableData && tableData[0]?.deposit}
+              tableName="Deposit"
+              subtitle={"Total 5 address that deposited the most"}
             />
-            &nbsp;
-            &nbsp; 
-          <ProjectTables
-            tableData={tableData[1]?.withdraw}
-            tableName="Withdraw"
-            subtitle={"Total 5 address that withdraw the most"}
-            /> 
-            </div>
+            &nbsp; &nbsp;
+            <ProjectTables
+              tableData={tableData && tableData[1]?.withdraw}
+              tableName="Withdraw"
+              subtitle={"Total 5 address that withdraw the most"}
+            />
+          </div>
         </Col>
       </Row>
       {/***Blog Cards***/}
