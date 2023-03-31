@@ -1,6 +1,7 @@
-
 const DB = require("../../connectDB/DB");
 let moment = require("moment");
+const  LiquidityData  = require("../../web3/y_crv/y_crv");
+
 const {
   query_Deposit,
   query_Withdraw,
@@ -8,7 +9,7 @@ const {
   query_insertDataFromEvent_LiquidityTB,
   query_insertPriceTokenIntoDB,
   query_Leger_handle,
-  query_Select_insert
+  query_Select_insert,
 } = require("./sql");
 class Y_CRVToken {
   liquidityEvent;
@@ -19,7 +20,7 @@ class Y_CRVToken {
     try {
       const type = req.body.type;
       const timeRange = req.body.timeRange;
-      let response = await  query_Leger_handle(timeRange, type);
+      let response = await query_Leger_handle(timeRange, type);
       const data = response;
       res.status(200).json({ response: data });
     } catch (err) {
@@ -42,19 +43,22 @@ class Y_CRVToken {
           if (item.sender === sender_yCRVAddress) {
             let value = +Number(item.value).toFixed(3);
             blockExpenses += value;
-            const sql =  query_insertDataFromEvent_TransactionsTB(
+            const sql = query_insertDataFromEvent_TransactionsTB(
               item,
               "withdraw"
             );
-            await  query_Select_insert(sql);
+            await query_Select_insert(sql);
           } else if (item.sender !== sender_yCRVAddress) {
             let value = +Number(item.value).toFixed(3);
             blockRevenues += value;
-            const sql =  query_insertDataFromEvent_TransactionsTB(item, "deposit");
-            await  query_Select_insert(sql);
+            const sql = query_insertDataFromEvent_TransactionsTB(
+              item,
+              "deposit"
+            );
+            await query_Select_insert(sql);
           }
         });
-        const sql =  query_insertDataFromEvent_LiquidityTB(
+        const sql = query_insertDataFromEvent_LiquidityTB(
           blockExpenses,
           blockRevenues,
           currentDateTime
@@ -73,7 +77,7 @@ class Y_CRVToken {
       );
       const data = await response.json();
       const price = data["curve-dao-token"].usd;
-      const sql =  query_insertPriceTokenIntoDB(price, currentDateTime);
+      const sql = query_insertPriceTokenIntoDB(price, currentDateTime);
       query_Select_insert(sql);
     } catch (err) {
       console.error(err);
@@ -82,10 +86,10 @@ class Y_CRVToken {
   }
   async totalAddressTx(req, res) {
     try {
-      const deposit = await  query_Select_insert( query_Deposit);
-      const withdraw = await  query_Select_insert( query_Withdraw);
+      const deposit = await query_Select_insert(query_Deposit);
+      const withdraw = await query_Select_insert(query_Withdraw);
       return res.status(200).json([
-        { type: "deposit", deposit: deposit }, 
+        { type: "deposit", deposit: deposit },
         { type: "withdraw", withdraw: withdraw },
       ]);
     } catch (err) {
@@ -93,4 +97,4 @@ class Y_CRVToken {
     }
   }
 }
-module.exports = { Y_CRVToken }; 
+module.exports = new Y_CRVToken(LiquidityData);
